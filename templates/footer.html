@@ -1,0 +1,19 @@
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+
+<footer class="page-footer">
+    <div class="footer-content">
+        <div class="footer-copyright">
+            © 2023 Gestor de Tareas
+        </div>
+        <div class="footer-links">
+            <a href="{{ url_for('index') }}">Inicio</a>
+            {% if 'user_id' in session %}
+                <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Iniciar sesión</a>
+            {% endif %}
+        </div>
+    </div>
+</footer>

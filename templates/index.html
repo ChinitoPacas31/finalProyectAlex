@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Tareas</title>
+    <!-- Materialize CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <!-- Icons de Materialize -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="page-wrapper">
+        <nav>
+            <div class="nav-wrapper container">
+                
+                <a href="{{ url_for('index') }}" class="brand-logo" style="display: flex; align-items: center;">
+                    <img src="{{ url_for('static', filename='img/Imagen2.png') }}" 
+                         alt="Logo Gestor de Tareas" 
+                         style="height: 50px; margin-right: 10px;">
+                    
+                     <span>Gestor de Tareas</span>
+                </a>
+                
+                <ul id="nav-mobile" class="right">
+                    {% if 'user_id' in session %}
+                        <li><span style="padding: 0 15px;">Hola, {{ session['username'] }}!</span></li>
+                        <li>
+                            <a href="{{ url_for('logout') }}" class="tooltipped" data-tooltip="Cerrar sesión">
+                                <i class="material-icons">exit_to_app</i>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li><a href="{{ url_for('login') }}" class="waves-effect waves-light btn">Iniciar sesión</a></li>
+                        <li><a href="{{ url_for('register') }}" class="waves-effect waves-light btn">Registrarse</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    
+    <main class="main-content">
+    <div class="container">
+        <!-- Mensajes Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="card-panel {{ 'green lighten-2' if category == 'success' else 'red lighten-2' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="row">
+            <form method="POST" class="col s12">
+                <div class="row">
+                    <div class="input-field col s10">
+                        <i class="material-icons prefix">add</i>
+                        <input type="text" id="task_description" name="task_description" class="validate" required>
+                        <label for="task_description">Nueva tarea</label>
+                    </div>
+                    <div class="input-field col s2">
+                        <button type="submit" name="add_task" class="btn-floating btn-large waves-effect waves-light blue">
+                            <i class="material-icons">send</i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <h4>Tareas Pendientes</h4>
+        <ul class="collection">
+            {% if pending_tasks %}
+                {% for task in pending_tasks %}
+                <li class="collection-item">
+                    <span>{{ task.description }}</span>
+                    <form method="POST" style="display:inline; float:right;">
+                        <input type="hidden" name="task_id" value="{{ task.task_id }}">
+                        <button type="submit" name="complete_task" class="btn-flat waves-effect">
+                            <i class="material-icons green-text">check</i>
+                        </button>
+                    </form>
+                </li>
+                {% endfor %}
+            {% else %}
+                <li class="collection-item">No hay tareas pendientes.</li>
+            {% endif %}
+        </ul>
+
+        <h4>Tareas Completadas</h4>
+        <ul class="collection">
+            {% if completed_tasks %}
+                {% for task in completed_tasks %}
+                <li class="collection-item grey lighten-2">
+                    <span style="text-decoration: line-through;">{{ task.description }}</span>
+                </li>
+                {% endfor %}
+            {% else %}
+                <li class="collection-item grey lighten-2">No hay tareas completadas.</li>
+            {% endif %}
+        </ul>
+
+        {% if completed_tasks %}
+        <form method="POST" style="padding-bottom: 50px; text-align: center;">
+            <button type="submit" name="undo_complete" class="btn waves-effect waves-light red">
+                <i class="material-icons left">undo</i>Deshacer Último Completado
+            </button>
+        </form>
+        {% endif %}
+     </div>
+    </main>
+
+    <footer class="page-footer">
+        <div class="footer-content">
+            <div class="footer-copyright">
+                © 2023 Gestor de Tareas
+            </div>
+            <div class="footer-links">
+                <a href="{{ url_for('index') }}">Inicio</a>
+                {% if 'user_id' in session %}
+                    <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Iniciar sesión</a>
+                {% endif %}
+            </div>
+        </div>
+    </footer>
+</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>
